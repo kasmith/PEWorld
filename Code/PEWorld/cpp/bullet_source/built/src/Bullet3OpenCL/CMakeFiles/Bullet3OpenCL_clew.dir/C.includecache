@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/ksmith/Coding/btWorld/Code/btWorld/cpp/bullet_source/src/clew/clew.c
+clew.h
+/Users/ksmith/Coding/btWorld/Code/btWorld/cpp/bullet_source/src/clew/clew.h
+windows.h
+-
+dlfcn.h
+-
+stdlib.h
+-
+
+/Users/ksmith/Coding/btWorld/Code/btWorld/cpp/bullet_source/src/clew/clew.h
+AvailabilityMacros.h
+-
+stdint.h
+-
+stddef.h
+-
+altivec.h
+-
+intrin.h
+-
+xmmintrin.h
+-
+intrin.h
+-
+emmintrin.h
+-
+mmintrin.h
+-
+intrin.h
+-
+immintrin.h
+-
+
