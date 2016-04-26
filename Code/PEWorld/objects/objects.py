@@ -191,6 +191,10 @@ class BasePEObj(object):
             raise ValueError('Must use a 4-length tuple of numbers (quaternion) to rotate')
         self.quaternion = quaternionProduct(self.quaternion,quat)
 
+    @property
+    def momentOfInertia(self):
+        if self._isStatic: return None
+        return self._odeMass.I
 
 
 class PEBox(BasePEObj):
@@ -201,6 +205,13 @@ class PEBox(BasePEObj):
         self._type = 'box'
         self._boxDims = dimensions
         self._odeGeom = ode.GeomBox(self._PEWorld._odeSpace,lengths=self._boxDims)
+        cm = kwargs.get('customMass',None)
+        if cm is not None:
+            if 'mass' in kwargs and 'density' in kwargs:
+                print "Note: customMass is overwriting any mass/density keywords"
+            if len(cm) != 9 or not all([isinstance(x,numers.Number) for x in cm]):
+                raise ValueError('Must use a 9-length tuple of numbers for setting custom mass (see PyODE API)')
+
         # Initialize the ODE objects
         if not self._isStatic:
             vol = dimensions[0]*dimensions[1]*dimensions[2]
@@ -208,7 +219,10 @@ class PEBox(BasePEObj):
                 self._mass = vol * self._density
             else:
                 self._density = self._mass / vol
-            self._odeMass.setBoxTotal(self._mass,self._boxDims[0],self._boxDims[1],self._boxDims[2])
+            if cm is not None:
+                self._odeMass.setParameters(cm[0],cm[1],cm[2],cm[3],cm[4],cm[5],cm[6],cm[7],cm[8])
+            else:
+                self._odeMass.setBoxTotal(self._mass,self._boxDims[0],self._boxDims[1],self._boxDims[2])
             self._odeBody.setMass(self._odeMass)
             self._odeBody.shape = self._type
             self._odeBody.boxsize = dimensions

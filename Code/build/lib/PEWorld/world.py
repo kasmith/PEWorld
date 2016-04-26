@@ -247,7 +247,7 @@ class PEWorld(object):
 
     # Function for ensuring objects don't overlap after jittering
     # Logic thought through by P Battaglia
-    def repel(self,steps=1000,thresh=10,step_size=.01,resetCFM = .9, resetERP = .9):
+    def repel(self,steps=1000,thresh=10,step_size=.01,resetCFM = .9, resetERP = .9, fixed = []):
         # Intro - record existing attributes before resetting them
         tmp_cfm = self._odeWorld.getCFM()
         tmp_erp = self._odeWorld.getERP()
@@ -255,10 +255,17 @@ class PEWorld(object):
         tmp_t = self._time
         tmp_stepsize = self._stepsize
         tmp_origattr = dict() # [linvel,angvel,mass]
+        tmp_objs = dict()
         for n in self.objNames():
             obj = self._objs[n]
             if obj.type != 'plane':
-                tmp_origattr[n] = [obj.velocity,obj.angvel,obj.mass]
+                if n in fixed:
+                    tmp_objs[n] = [obj._odeBody,obj._odeMass]
+                    obj._odeShape.setBody(None)
+                    obj._odeBody = None
+                    obj._odeMass = None
+                else:
+                    tmp_origattr[n] = [obj.velocity,obj.angvel,obj.mass]
 
         # Remove all velocity
         def fullDamp(o):
